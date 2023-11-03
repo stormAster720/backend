@@ -11,10 +11,10 @@ class ProductManager {
         this.products = products;
         this.productArray = [];
 
-     /*   //Add all products to the products array on construct
-        this.products.forEach(product => {
-            this.addProduct(product);
-        });*/
+        /*   //Add all products to the products array on construct
+           this.products.forEach(product => {
+               this.addProduct(product);
+           });*/
     }
 
     generateID(product) {
@@ -54,10 +54,13 @@ class ProductManager {
 
 const productManager = new ProductManager(initialProducts);
 
+//Returns an empty array
 productManager.getProducts();
 
+//Adds a product
 productManager.addProduct({ title: "fifth item", description: "Product 5", price: 1000, thumbail: "null", code: "NÑO", id: "", stock: "" })
 
+//Returns an array with the added product
 productManager.getProducts();
 
 //PD: el id que esta puesta estara en la lista de productos, para que retorne falso, cambialo por cualquier otro texto
