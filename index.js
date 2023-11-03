@@ -11,10 +11,10 @@ class ProductManager {
         this.products = products;
         this.productArray = [];
 
-        //Add all products to the products array on construct
+     /*   //Add all products to the products array on construct
         this.products.forEach(product => {
             this.addProduct(product);
-        });
+        });*/
     }
 
     generateID(product) {
@@ -54,7 +54,9 @@ class ProductManager {
 
 const productManager = new ProductManager(initialProducts);
 
-productManager.addProduct({title: "fifth item", description: "Product 5", price: 1000, thumbail: "null", code: "NÑO", id: "", stock: ""} )
+productManager.getProducts();
+
+productManager.addProduct({ title: "fifth item", description: "Product 5", price: 1000, thumbail: "null", code: "NÑO", id: "", stock: "" })
 
 productManager.getProducts();
 
