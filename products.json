@@ -1,38 +1,3 @@
 [
-  {
-    "title": "first item",
-    "description": "Product 1",
-    "price": 200,
-    "thumbail": "null",
-    "code": "ABC",
-    "id": "D1B5488D3A0FAF595DBBE72C38E6A24C",
-    "stock": ""
-  },
-  {
-    "title": "second item",
-    "description": "Product 2",
-    "price": 400,
-    "thumbail": "null",
-    "code": "DEF",
-    "id": "94B32AB02E628D5AE594449A6981A46A",
-    "stock": ""
-  },
-  {
-    "title": "third item",
-    "description": "Product 3",
-    "price": 600,
-    "thumbail": "null",
-    "code": "HIJ",
-    "id": "161F08E42975C767A5E26C9CD2B2E493",
-    "stock": ""
-  },
-  {
-    "title": "forth item",
-    "description": "Product 4",
-    "price": 800,
-    "thumbail": "null",
-    "code": "KLM",
-    "id": "0D98CC05FDCB7252B4505B8BEB7B5AAD",
-    "stock": ""
-  }
+  
 ]
