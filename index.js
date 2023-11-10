@@ -6,7 +6,7 @@ const initialProducts = [
 ];
 
 
-const fs = require('fs')
+const fs = require('fs');
 const crypto = require('crypto');
 
 class ProductManager {
@@ -111,7 +111,7 @@ class ProductManager {
             const foundProduct = products.find(prod => prod.id === id);
 
             if (foundProduct) {
-                console.log(`The product with ID ${id} is present (${foundProduct.title})`);
+                console.log(`The product with ID ${id} is present object :(${foundProduct}), name: ${foundProduct.title}`);
                 return foundProduct;
             } else {
                 console.log("Product not found");
@@ -141,6 +141,6 @@ productManager.getProducts();
 //PD: actualiza un producto que exista en el archivo products.json por ID con un nuevo objeto (conservando el ID) 
 productManager.updateProduct("420906297FE196CB968C67471A43023B", { title: "Updated item", description: "update", price: 10000, thumbail: "null", code: "AABB", stock: "" })
 //PD: reemplazar el id con cualquier ID generado en los productos dentro del archivo products.json
-productManager.getProductByID("420906297FE196CB968C67471A43023B")
+productManager.getProductByID("0D98CC05FDCB7252B4505B8BEB7B5AAD")
 
 
