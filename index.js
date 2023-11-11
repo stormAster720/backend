@@ -48,7 +48,6 @@ class ProductManager {
     addProduct(product) {
         // Validate and add product
         if (this.validateProduct(product)) {
-            this.generateID(product);
             this.productArray.push(product);
             this.writeProductsToFile();
         } else {
