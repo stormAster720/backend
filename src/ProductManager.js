@@ -19,7 +19,7 @@ class ProductManager {
         this.productArray = this.readProductsFromFile() || [];
 
         // Add all initial products to the products array
-        this.addProducts(initialProducts);
+      //  this.addProducts(initialProducts);
     }
 
     // Hashing function for generating the product id
@@ -39,25 +39,26 @@ class ProductManager {
         return !isCodeDuplicate && !isIDDuplicate;
     }
 
-    addProducts(data) {
-        data.forEach(product => {
-            this.addProduct(product);
-        });
+    async addProducts(data) {
+        for (const product of data) {
+            await this.addProduct(product);
+        }
     }
 
-    addProduct(product) {
+
+    async addProduct(product) {
         // Validate and add product
         if (this.validateProduct(product)) {
             this.productArray.push(product);
-            this.writeProductsToFile();
+            await this.writeProductsToFile();
         } else {
             console.log(`The product "${product.title}" (with code ${product.code}) and ID ${product.id} already exists`);
         }
     }
 
-    readProductsFromFile() {
+    async readProductsFromFile() {
         try {
-            const data = fs.readFileSync(this.path, 'utf-8');
+            const data = await fs.promises.readFile(this.path, 'utf-8');
             return JSON.parse(data);
         } catch (error) {
             // Handle file read error or empty file
@@ -66,47 +67,59 @@ class ProductManager {
         }
     }
 
-    writeProductsToFile() {
+    async writeProductsToFile() {
         try {
-            fs.writeFileSync(this.path, JSON.stringify(this.productArray, null, 2), 'utf-8');
+            await fs.writeFile(this.path, JSON.stringify(this.productArray, null, 2), 'utf-8');
         } catch (error) {
             console.error('Error writing products file:', error.message);
         }
     }
 
-    getProducts() {
-        const products = this.readProductsFromFile() || [];
-        console.log(products);
+    async getProducts(limit) {
+        try {
+            const products = await this.readProductsFromFile() || [];
+    
+            if (limit) {
+                // If a limit is provided, return only the specified number of products
+                return products.slice(0, limit);
+            } else {
+                // If no limit is provided, return all products
+                return products;
+            }
+        } catch (error) {
+            console.error("Error getting products: ", error.message);
+            return null;
+        }
     }
 
-    updateProduct(id, data) {
+    async updateProduct(id, data) {
         let productIndex = this.productArray.findIndex(prod => prod.id === id);
 
         if (productIndex !== -1) {
             // Update the found product with the new data
             this.productArray[productIndex] = { ...this.productArray[productIndex], ...data, id };
-            this.writeProductsToFile(); // Update the file after modifying the array
+            await this.writeProductsToFile(); // Update the file after modifying the array
         } else {
             console.log("Product not found");
         }
     }
 
-    deleteProductByID(id) {
+    async deleteProductByID(id) {
         const productIndex = this.productArray.findIndex(prod => prod.id === id);
 
         if (productIndex !== -1) {
             // Remove the product from the array
             this.productArray.splice(productIndex, 1);
-            this.writeProductsToFile(); // Update the file after modifying the array
+            await this.writeProductsToFile(); // Update the file after modifying the array
             console.log(`Product with ID ${id} deleted successfully.`);
         } else {
             console.log("Product not found.");
         }
     }
 
-    getProductByID(id) {
+    async getProductByID(id) {
         try {
-            const products = this.readProductsFromFile() || [];
+            const products = await this.readProductsFromFile() || [];
             const foundProduct = products.find(prod => prod.id === id);
 
             if (foundProduct) {
@@ -123,23 +136,25 @@ class ProductManager {
     }
 }
 
-const productManager = new ProductManager('./products.json');
+const instance = new ProductManager('./products.json');
 
+module.exports = { instance, ProductManager };
+/*
 //Returns an empty array if products.json is empty
-productManager.getProducts();
+instance.getProducts();
 
 //Adds a product
-//productManager.addProduct({ title: "first item", description: "Product 5", price: 1000, thumbail: "null", code: "NÑO", id: "", stock: "" })
+//instance.addProduct({ title: "first item", description: "Product 5", price: 1000, thumbail: "null", code: "NÑO", id: "", stock: "" })
 
 //Returns an array with the added product
-productManager.getProducts();
+instance.getProducts();
 
 //PD LOS IDS SERAN GENERADOS AUTOMATICAMENTE PARA CADA PRODUCTO LA PRIMERA VEZ QUE SE CORRA EL CODIGO, REVISAR EL ARCHIVO products.json Y REEMPLAZAR SEGUN CORRESPONDA
 
 
 //PD: actualiza un producto que exista en el archivo products.json por ID con un nuevo objeto (conservando el ID) 
-productManager.updateProduct("420906297FE196CB968C67471A43023B", { title: "Updated item", description: "update", price: 10000, thumbail: "null", code: "AABB", stock: "" })
+instance.updateProduct("420906297FE196CB968C67471A43023B", { title: "Updated item", description: "update", price: 10000, thumbail: "null", code: "AABB", stock: "" })
 //PD: reemplazar el id con cualquier ID generado en los productos dentro del archivo products.json
-productManager.getProductByID("0D98CC05FDCB7252B4505B8BEB7B5AAD")
+instance.getProductByID("0D98CC05FDCB7252B4505B8BEB7B5AAD")
 
-
+*/
