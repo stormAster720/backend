@@ -52,13 +52,14 @@ class CartManager {
         this.cartArray = data || [];
     }
 
-    // Hashing function for generating a cart id
+    //Hashing function for generating a cart id
     generateID() {
         const idData = `${Math.random()}`;
         const hash = crypto.createHash('md5').update(idData).digest('hex');
         return hash.toUpperCase();
     }
 
+    //Validates if a cart can be created or not
     async validateCart(id) {
         const isIDDuplicate = this.cartArray.some(cart => cart.id === id);
 
@@ -69,6 +70,7 @@ class CartManager {
         return true;
     }
 
+     //Read asynchronously from a json file
     async readCartsFromFile() {
         try {
             const data = await fs.promises.readFile(this.path, 'utf-8');
@@ -80,6 +82,7 @@ class CartManager {
         }
     }
 
+    //Write asynchronously to a json file
     async writeCartsToFile() {
         try {
             await fs.promises.writeFile(this.path, JSON.stringify(this.cartArray, null, 2), { encoding: 'utf-8' });
@@ -88,16 +91,19 @@ class CartManager {
         }
     }
 
+    //Return a cart by it's id
     async getCart(id) {
         const cart = this.cartArray.find(cart => cart.id === id);
         return cart || null;
     }
 
+    //Add or update an element on the cart
     async addToCart(cartID, productID) {
         const cart = await this.getCart(cartID);
 
         if (cart) {
             const existingProduct = cart.products.find(entry => entry.product === productID);
+            //Checks if products.json contains the desired product by looking for it's id.
             const itemExistsOnDatabase = await productManager.instance.getProductByID(productID);
 
             if (existingProduct) {
@@ -113,6 +119,7 @@ class CartManager {
         }
     }
 
+    //Creates a cart and pushes some products to it
     async createCart(products) {
         const cartID = this.generateID();
 

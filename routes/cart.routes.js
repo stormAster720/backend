@@ -12,6 +12,7 @@ async function createCart(req, res) {
     const data = req.body;
 
     //USAGE: post as a JSON array i.e ["Test", "Test2", "Test3"]
+    //Existing product IDs must be used, otherwise the cart arrays will be empty.
 
     //Create a cart instance and add the request body items to it.
     const cart = await cartManager.instance.createCart(data)
