@@ -1,10 +1,7 @@
 const initialProducts = [
-    { title: "first item", description: "Product 1", price: 200, thumbail: "null", code: "ABC", id: "", stock: "" },
-    { title: "second item", description: "Product 2", price: 400, thumbail: "null", code: "DEF", id: "", stock: "" },
-    { title: "third item", description: "Product 3", price: 600, thumbail: "null", code: "HIJ", id: "", stock: "" },
-    { title: "forth item", description: "Product 4", price: 800, thumbail: "null", code: "KLM", id: "", stock: "" },
-];
+    { title: "first item", description: "Product 1", code: "ABC", price: 200, stock: 0, thumbails: [""], category: "uncategorized", id: "", },
 
+];
 
 const fs = require('fs');
 const crypto = require('crypto');
@@ -14,13 +11,19 @@ class ProductManager {
         console.log("Product manager initialized");
 
         this.path = path;
-
         // Read initial products from file or create an empty array
-        this.productArray = this.readProductsFromFile() || [];
+        this.initialize();
+    }
+
+    async initialize() {
+        // Read initial products from file or create an empty array
+        const data = await this.readProductsFromFile();
+        this.productArray = data || [];
 
         // Add all initial products to the products array
-      //  this.addProducts(initialProducts);
+        //  await this.addProducts(initialProducts);
     }
+
 
     // Hashing function for generating the product id
     generateID(product) {
@@ -30,13 +33,27 @@ class ProductManager {
     }
 
     validateProduct(product) {
-        // Check if the product with the same code or ID already exists
+        // Generate an id for this product
         this.generateID(product);
+
+        // Check if the product has the mandatory properties
+        if (!product.title || !product.description || !product.code || !product.price || !product.category ||parseInt(product.price) <= 0 || parseInt(product.stock) < 0) {
+           
+            return false;
+        }
 
         const isCodeDuplicate = this.productArray.some(prod => prod.code === product.code);
         const isIDDuplicate = this.productArray.some(prod => prod.id === product.id);
 
-        return !isCodeDuplicate && !isIDDuplicate;
+        //Check if an ID or CODE is duplicated
+        if (isCodeDuplicate || isIDDuplicate) {
+            return false;
+        }
+
+
+        product.status = true;
+        //Return true if all fields are valid
+        return true;
     }
 
     async addProducts(data) {
@@ -47,12 +64,23 @@ class ProductManager {
 
 
     async addProduct(product) {
+        console.log("Attempting to add...");
+
         // Validate and add product
         if (this.validateProduct(product)) {
+            // You can directly push the product object to the array
             this.productArray.push(product);
+
             await this.writeProductsToFile();
+
+            if (product) {
+                console.log(`The product ${product.title} has been added successfully`);
+                return { success: true };
+            }
+
         } else {
             console.log(`The product "${product.title}" (with code ${product.code}) and ID ${product.id} already exists`);
+            return { success: false };
         }
     }
 
@@ -69,7 +97,7 @@ class ProductManager {
 
     async writeProductsToFile() {
         try {
-            await fs.writeFile(this.path, JSON.stringify(this.productArray, null, 2), 'utf-8');
+            await fs.promises.writeFile(this.path, JSON.stringify(this.productArray, null, 2), { encoding: 'utf-8' });
         } catch (error) {
             console.error('Error writing products file:', error.message);
         }
@@ -78,7 +106,7 @@ class ProductManager {
     async getProducts(limit) {
         try {
             const products = await this.readProductsFromFile() || [];
-    
+
             if (limit) {
                 // If a limit is provided, return only the specified number of products
                 return products.slice(0, limit);
@@ -99,8 +127,11 @@ class ProductManager {
             // Update the found product with the new data
             this.productArray[productIndex] = { ...this.productArray[productIndex], ...data, id };
             await this.writeProductsToFile(); // Update the file after modifying the array
+            console.log("Product updated successfully")
+            return { success: true };
         } else {
-            console.log("Product not found");
+            console.error("Product not found");
+            return { success: false };
         }
     }
 
@@ -112,8 +143,11 @@ class ProductManager {
             this.productArray.splice(productIndex, 1);
             await this.writeProductsToFile(); // Update the file after modifying the array
             console.log(`Product with ID ${id} deleted successfully.`);
+
+            return { success: true };
         } else {
             console.log("Product not found.");
+            return { success: false };
         }
     }
 
